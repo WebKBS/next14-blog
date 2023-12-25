@@ -55,7 +55,17 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data } = await supabase.auth.getSession();
-  console.log(data);
+  // console.log(data.session.user.user_metadata.role);
+  if (data.session) {
+    console.log(data.session.user.user_metadata);
+    if (data.session.user.user_metadata.role !== 'admin') {
+      // 관리자가 아니면 메인페이지로 이동
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  } else {
+    // 회원정보가 없으면 메인페이지로 이동
+    return NextResponse.redirect(new URL('/', request.url));
+  }
 
   return response;
 }
@@ -69,6 +79,7 @@ export const config = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/dashboard/:path*',
   ],
 };
