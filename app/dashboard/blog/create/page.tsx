@@ -22,6 +22,7 @@ import {
   RocketIcon,
   StarIcon,
 } from '@radix-ui/react-icons';
+import Image from 'next/image';
 import { useState } from 'react';
 import { BsSave } from 'react-icons/bs';
 
@@ -126,7 +127,10 @@ export default function BlogForm() {
               )}
             />
           </div>
-          <Button className="flex items-center gap-1">
+          <Button
+            className="flex items-center gap-1"
+            disabled={!form.formState.isValid}
+          >
             <BsSave /> Save
           </Button>
         </div>
@@ -166,6 +170,60 @@ export default function BlogForm() {
               </FormControl>
               {form.getFieldState('title').invalid &&
                 form.getValues().title && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div
+                  className={cn(
+                    'p-2 w-full flex break-words gap-2',
+                    isPreview ? 'divide-x-0' : 'divide-x'
+                  )}
+                >
+                  <Input
+                    placeholder="image url"
+                    {...field}
+                    className={cn(
+                      'border-none font-medium leading-relaxed text-lg',
+                      isPreview ? 'w-0 p-0' : 'w-full lg:w-1/2'
+                    )}
+                  />
+                  <div
+                    className={cn(
+                      'lg:px-10',
+                      isPreview
+                        ? 'mx-auto w-full lg:w-4/5'
+                        : 'w-1/2 lg:block hidden'
+                    )}
+                  >
+                    {!isPreview ? (
+                      <>
+                        <p>Click on Privew</p>
+                      </>
+                    ) : (
+                      <div className="relative h-80 mt-5 border rounded-md">
+                        <Image
+                          src={form.getValues().image_url}
+                          alt="preview"
+                          fill
+                          className="object-cover object-center rounded-md"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </FormControl>
+              {form.getFieldState('image_url').invalid &&
+                form.getValues().image_url && (
+                  <div className="p-2">
+                    <FormMessage />{' '}
+                  </div>
+                )}
             </FormItem>
           )}
         />
