@@ -1,3 +1,4 @@
+import { icons } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import 'highlight.js/styles/atom-one-dark.min.css';
 import { PiTerminalThin } from 'react-icons/pi';
@@ -31,6 +32,11 @@ export default function MarkdownPreview({
 
           if (match?.length) {
             let Icon = PiTerminalThin;
+
+            const isMatch = icons.hasOwnProperty(match[1]);
+
+            if (isMatch) Icon = icons[match[1] as keyof typeof icons];
+
             const id = Math.floor(Math.random() * 100 + 1).toString();
 
             return (
