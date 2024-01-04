@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import {
@@ -224,6 +225,45 @@ export default function BlogForm() {
                     <FormMessage />{' '}
                   </div>
                 )}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div
+                  className={cn(
+                    'p-2 w-full flex break-words gap-2',
+                    isPreview ? 'divide-x-0' : 'divide-x h-70vh'
+                  )}
+                >
+                  <Textarea
+                    placeholder="content"
+                    {...field}
+                    className={cn(
+                      'border-none font-medium leading-relaxed text-lg resize-none h-full',
+                      isPreview ? 'w-0 p-0' : 'w-full lg:w-1/2'
+                    )}
+                  />
+                  <div
+                    className={cn(
+                      'lg:px-10',
+                      isPreview
+                        ? 'mx-auto w-full lg:w-4/5'
+                        : 'w-1/2 lg:block hidden'
+                    )}
+                  >
+                    <h1 className="text-3xl font-medium">
+                      {form.getValues().content}
+                    </h1>
+                  </div>
+                </div>
+              </FormControl>
+              {form.getFieldState('content').invalid &&
+                form.getValues().content && <FormMessage />}
             </FormItem>
           )}
         />
