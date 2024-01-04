@@ -8,29 +8,47 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/components/ui/use-toast';
-import { EyeOpenIcon, RocketIcon, StarIcon } from '@radix-ui/react-icons';
+import { cn } from '@/lib/utils';
+import {
+  EyeOpenIcon,
+  Pencil1Icon,
+  RocketIcon,
+  StarIcon,
+} from '@radix-ui/react-icons';
+import { useState } from 'react';
 import { BsSave } from 'react-icons/bs';
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: 'Username must be at least 2 characters.',
+  title: z.string().min(2, {
+    message: 'Title must be at least 2 characters.',
   }),
+  image_url: z.string().url({ message: 'Invalid URL.' }),
+  content: z.string().min(2, {
+    message: 'Content must be at least 2 characters.',
+  }),
+  is_publish: z.boolean(),
+  is_premium: z.boolean(),
 });
 
 export default function BlogForm() {
+  const [isPreview, setIsPreview] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
+    mode: 'all',
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: '',
+      title: '',
+      image_url: '',
+      content: '',
+      is_publish: false,
+      is_premium: true,
     },
   });
 
@@ -51,66 +69,106 @@ export default function BlogForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full border rounded-md space-y-6"
       >
-        <div className="p-5 flex gap-5 items-center flex-wrap">
-          <span
-            role="button"
-            tabIndex={0}
-            className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md hover:ring-2 transition-all hover:ring-zinc-400"
-          >
-            <EyeOpenIcon />
-            Preview
-          </span>
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md">
-                    <StarIcon />
-                    <span>Premium</span>
-                    <Switch />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md">
-                    <RocketIcon />
-                    <span>Publish</span>
-                    <Switch />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
+        <div className="p-5 flex items-center flex-wrap justify-between border-b gap-5">
+          <div className="flex gap-5 items-center">
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setIsPreview((prev) => !prev)}
+              className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md hover:ring-2 transition-all hover:ring-zinc-400"
+            >
+              {isPreview ? (
+                <>
+                  <Pencil1Icon />
+                  Edit
+                </>
+              ) : (
+                <>
+                  <EyeOpenIcon />
+                  Preview
+                </>
+              )}
+            </span>
+            <FormField
+              control={form.control}
+              name="is_premium"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md">
+                      <StarIcon />
+                      <span>Premium</span>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="is_publish"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center gap-1 border bg-zinc-700 p-2 rounded-md">
+                      <RocketIcon />
+                      <span>Publish</span>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           <Button className="flex items-center gap-1">
             <BsSave /> Save
           </Button>
         </div>
         <FormField
           control={form.control}
-          name="username"
+          name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <div
+                  className={cn(
+                    'p-2 w-full flex break-words gap-2',
+                    isPreview ? 'divide-x-0' : 'divide-x'
+                  )}
+                >
+                  <Input
+                    placeholder="title"
+                    {...field}
+                    className={cn(
+                      'border-none font-medium leading-relaxed text-lg',
+                      isPreview ? 'w-0 p-0' : 'w-full lg:w-1/2'
+                    )}
+                  />
+                  <div
+                    className={cn(
+                      'lg:px-10',
+                      isPreview
+                        ? 'mx-auto w-full lg:w-4/5'
+                        : 'w-1/2 lg:block hidden'
+                    )}
+                  >
+                    <h1 className="text-3xl font-medium">
+                      {form.getValues().title}
+                    </h1>
+                  </div>
+                </div>
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
+              {form.getFieldState('title').invalid &&
+                form.getValues().title && <FormMessage />}
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
