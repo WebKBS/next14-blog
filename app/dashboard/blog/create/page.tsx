@@ -26,6 +26,7 @@ import {
 import Image from 'next/image';
 import { useState } from 'react';
 import { BsSave } from 'react-icons/bs';
+import MarkdownPreview from '../../components/markdown/MarkdownPreview';
 
 const FormSchema = z.object({
   title: z.string().min(2, {
@@ -72,7 +73,7 @@ export default function BlogForm() {
         className="w-full border rounded-md space-y-6"
       >
         <div className="p-5 flex items-center flex-wrap justify-between border-b gap-5">
-          <div className="flex gap-5 items-center">
+          <div className="flex gap-5 items-center flex-wrap">
             <span
               role="button"
               tabIndex={0}
@@ -256,9 +257,7 @@ export default function BlogForm() {
                         : 'w-1/2 lg:block hidden'
                     )}
                   >
-                    <h1 className="text-3xl font-medium">
-                      {form.getValues().content}
-                    </h1>
+                    <MarkdownPreview content={form.getValues().content} />
                   </div>
                 </div>
               </FormControl>
